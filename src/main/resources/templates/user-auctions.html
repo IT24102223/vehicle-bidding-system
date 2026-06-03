@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Ongoing Auctions</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h1>Ongoing Auctions</h1>
+
+  <!-- Search Form -->
+  <form th:action="@{/auctions}" method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="search" class="form-control"
+             placeholder="Search by make or model">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Auctions Table -->
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Vehicle</th>
+      <th>Current Bid</th>
+      <th>Status</th>
+      <th>Countdown</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="auction : ${auctions}">
+      <td th:text="${auction.auctionId}"></td>
+      <td th:text="${auction.listing.make + ' ' + auction.listing.model}"></td>
+      <td th:text="${auction.highestBid != null ? auction.highestBid : 'No bids yet'}"></td>
+      <td th:text="${auction.status}"></td>
+      <td>
+                <span th:id="'timer-' + ${auction.auctionId}"
+                      th:attr="data-end-time=${auction.currentEndTime}"></span>
+      </td>
+      <td>
+        <button class="btn btn-primary btn-sm"
+                th:onclick="'placeBid(' + ${auction.auctionId} + ')'">
+          Place Bid
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/auction-timer.js}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

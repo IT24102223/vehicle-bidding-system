@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Manage Auctions</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h1>Manage Auctions</h1>
+
+  <!-- Create Auction Form -->
+  <div class="card mb-4">
+    <div class="card-header">Create Auction</div>
+    <div class="card-body">
+      <form th:action="@{/admin/auctions}" th:object="${auction}" method="post">
+        <div class="form-group">
+          <label for="listing.listingId">Listing ID</label>
+          <input type="number" class="form-control"
+                 id="listing.listingId"
+                 th:field="*{listing.listingId}" required>
+        </div>
+        <div class="form-group">
+          <label for="endTime">End Time</label>
+          <input type="datetime-local" class="form-control"
+                 id="endTime" th:field="*{endTime}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Auctions Table -->
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Vehicle</th>
+      <th>Current Bid</th>
+      <th>Status</th>
+      <th>Countdown</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="auction : ${auctions}">
+      <td th:text="${auction.auctionId}"></td>
+      <td th:text="${auction.listing.make + ' ' + auction.listing.model}"></td>
+      <td th:text="${auction.highestBid != null ? auction.highestBid : 'No bids yet'}"></td>
+      <td th:text="${auction.status}"></td>
+      <td>
+                <span th:id="'timer-' + ${auction.auctionId}"
+                      th:attr="data-end-time=${auction.currentEndTime}"></span>
+      </td>
+      <td>
+        <form th:if="${auction.status == 'Pending'}"
+              th:action="@{/admin/auctions/{id}/start(id=${auction.auctionId})}"
+              method="post">
+          <button type="submit" class="btn btn-success btn-sm">Start</button>
+        </form>
+        <form th:if="${auction.status == 'Active'}"
+              th:action="@{/admin/auctions/{id}/end(id=${auction.auctionId})}"
+              method="post">
+          <button type="submit" class="btn btn-danger btn-sm">End</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/auction-timer.js}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
